@@ -1,15 +1,13 @@
 (ns mort.core
   (:gen-class)
   (:require [clojure.math.numeric-tower :as math])
+  (:require [mort.config :as config])
   )
 
 (defn -main
   "I don't do a whole lot ... yet."
   [& args]
   (println "Hello, World!"))
-
-(def interest-rate 4.875)
-(def principle-balance 183143.71)
 
 (defn monthly-interest-rate
   "Divides by 12. Pass in the annual interest rate."
@@ -36,7 +34,7 @@
     )))
 
 (defn one-year-of-accrual-with-interest-only-payments
-  "Iteratively calculates the total interest accrued in 12 compounding months."
+  "Iteratively calculates the total interest accrued in 12 months with a static balance, as if only the iterest were being paid each month."
   [starting-balance interest-rate]
   (loop [iteration 12 balance starting-balance accrual 0]
     (if (> iteration 0)
@@ -44,17 +42,28 @@
       accrual
     )))
 
-(defn one-year-of-accrual-with-interest-only-payments
-  "Iteratively calculates the total interest accrued in 12 compounding months."
-  [starting-balance interest-rate]
-  (loop [iteration 12 balance starting-balance accrual 0]
+(defn principle-payment-left-after-interest
+  "Subtracts the interest from the payment and returns the amount left that may be applied to principle"
+  [payment interest]
+  (- payment interest))
+
+(defn one-year-of-accrual-with-required-payments
+  "Iteratively calculates the total interest accrued in 12 months with principle+interest payments being made as required by the bank."
+  [starting-balance interest-rate monthly-payment]
+  (loop [iteration 12 balance starting-balance accrual 0 payment monthly-payment]
     (if (> iteration 0)
-      (recur (dec iteration) balance (+ accrual (one-month-of-interest balance interest-rate)))
+      (recur
+       (dec iteration)
+       (- balance (principle-payment-left-after-interest payment (one-month-of-interest balance interest-rate)))
+       (+ accrual (one-month-of-interest balance interest-rate))
+       payment)
       accrual
     )))
 
 (one-year-of-compounded-accrual-with-no-payments principle-balance interest-rate)
+(one-month-of-interest principle-balance interest-rate)
 (one-year-of-accrual-with-interest-only-payments principle-balance interest-rate)
+(one-year-of-accrual-with-required-payments principle-balance interest-rate config/required-payment)
 
 ; example math stuff from the numeric-tower lib
 (defn- sqr
