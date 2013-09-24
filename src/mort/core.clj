@@ -8,6 +8,9 @@
   [& args]
   (println "Hello, World!"))
 
+(def interest-rate 4.875)
+(def principle-balance 183143.71)
+
 (defn monthly-interest-rate
   "Divides by 12. Pass in the annual interest rate."
   [interest-rate]
@@ -32,7 +35,26 @@
       accrual
     )))
 
-(one-year-of-compounded-accrual-with-no-payments 183000 4.875)
+(defn one-year-of-accrual-with-interest-only-payments
+  "Iteratively calculates the total interest accrued in 12 compounding months."
+  [starting-balance interest-rate]
+  (loop [iteration 12 balance starting-balance accrual 0]
+    (if (> iteration 0)
+      (recur (dec iteration) balance (+ accrual (one-month-of-interest balance interest-rate)))
+      accrual
+    )))
+
+(defn one-year-of-accrual-with-interest-only-payments
+  "Iteratively calculates the total interest accrued in 12 compounding months."
+  [starting-balance interest-rate]
+  (loop [iteration 12 balance starting-balance accrual 0]
+    (if (> iteration 0)
+      (recur (dec iteration) balance (+ accrual (one-month-of-interest balance interest-rate)))
+      accrual
+    )))
+
+(one-year-of-compounded-accrual-with-no-payments principle-balance interest-rate)
+(one-year-of-accrual-with-interest-only-payments principle-balance interest-rate)
 
 ; example math stuff from the numeric-tower lib
 (defn- sqr
