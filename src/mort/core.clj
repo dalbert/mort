@@ -25,7 +25,9 @@
 (defn one-month-of-interest
   "Calculates the amount of interest that would accrue in one month."
   [balance interest-rate]
-  (* balance (rate-to-percent (monthly-interest-rate interest-rate))))
+  (if (> balance 0)
+    (* balance (rate-to-percent (monthly-interest-rate interest-rate)))
+    0))
 
 (defn one-year-of-compounded-accrual-with-no-payments
   "Iteratively calculates the total interest accrued in 12 compounding months."
