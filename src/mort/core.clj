@@ -1,8 +1,6 @@
 (ns mort.core
   (:gen-class)
-  (:require [clojure.math.numeric-tower :as math])
-  (:require [mort.config :as config])
-  )
+  (:require [clojure.math.numeric-tower :as math]))
 
 (defn -main
   "I don't do a whole lot ... yet."
@@ -59,30 +57,4 @@
        payment)
       accrual
     )))
-
-(one-year-of-compounded-accrual-with-no-payments principle-balance interest-rate)
-(one-month-of-interest principle-balance interest-rate)
-(one-year-of-accrual-with-interest-only-payments principle-balance interest-rate)
-(one-year-of-accrual-with-required-payments principle-balance interest-rate config/required-payment)
-
-; example math stuff from the numeric-tower lib
-(defn- sqr
-  "Uses the numeric tower expt to square a number"
-  [x]
-  (math/expt x 2))
-
-(defn euclidean-squared-distance
-  "Computes the Euclidean squared distance between two sequences"
-  [a b]
-  (reduce + (map (comp sqr -) a b)))
-
-(defn euclidean-distance
-  "Computes the Euclidean distance between two sequences"
-  [a b]
-  (math/sqrt (euclidean-squared-distance a b)))
-
-(let [a [1 2 3 5 8 13 21]
-      b [0 2 4 6 8 10 12]]
-  (euclidean-distance a b))
-
 
