@@ -53,26 +53,35 @@
 (defn one-year-of-accrual-with-required-payments
   "Iteratively calculates the total interest accrued in 12 months with principle+interest payments being made as required by the bank."
   [starting-balance interest-rate monthly-payment]
-  (loop [iteration 12 balance starting-balance accrual 0 payment monthly-payment]
+  (loop [iteration 12 balance starting-balance accrual 0]
     (if (> iteration 0)
       (recur
        (dec iteration)
-       (- balance (principle-payment-left-after-interest payment (one-month-of-interest balance interest-rate)))
-       (+ accrual (one-month-of-interest balance interest-rate))
-       payment)
+       (- balance (principle-payment-left-after-interest monthly-payment (one-month-of-interest balance interest-rate)))
+       (+ accrual (one-month-of-interest balance interest-rate)))
       accrual
     )))
 
 (defn years-of-accrual-with-required-payments
   "Iteratively calculates the total interest accrued in the given number of years with principle+interest payments being made as required by the bank."
   [years starting-balance interest-rate monthly-payment]
-  (loop [iteration (years-to-months years) balance starting-balance accrual 0 payment monthly-payment]
+  (loop [iteration (years-to-months years) balance starting-balance accrual 0]
     (if (> iteration 0)
       (recur
        (dec iteration)
-       (- balance (principle-payment-left-after-interest payment (one-month-of-interest balance interest-rate)))
-       (+ accrual (one-month-of-interest balance interest-rate))
-       payment)
+       (- balance (principle-payment-left-after-interest monthly-payment (one-month-of-interest balance interest-rate)))
+       (+ accrual (one-month-of-interest balance interest-rate)))
       accrual
     )))
 
+(defn years-of-accrual-with-scheduled-principle-payments
+  "Iteratively calculates the total interest accrued in the given number of years with additional principle payments made each month."
+  [years starting-balance interest-rate monthly-payment monthly-principle-payment]
+  (loop [iteration (years-to-months years) balance starting-balance accrual 0]
+    (if (> iteration 0)
+      (recur
+       (dec iteration)
+       (- balance (principle-payment-left-after-interest monthly-payment (one-month-of-interest balance interest-rate)) monthly-principle-payment)
+       (+ accrual (one-month-of-interest balance interest-rate)))
+      accrual
+    )))
