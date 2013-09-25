@@ -36,7 +36,7 @@
     (* balance (rate-to-percent (monthly-interest-rate interest-rate)))
     0))
 
-(defn new-balance-after-payment
+(defn new-balance-after-one-month-payment
   "Calculates the new loan balance after one month's payment is made."
   [balance interest-rate required principle bonus]
   (let [new-balance
@@ -46,7 +46,17 @@
             bonus)]
      (if (< new-balance 0) 0 new-balance)))
 
-(float (new-balance-after-payment 100000 5 750 500 100))
+(defn new-balance-after-one-year-of-payments
+  "Calculates the new loan balance after 12 monthly payments are made."
+  [starting-balance interest-rate required principle bonus]
+  (loop [iteration 0 balance starting-balance accrual 0]
+    (if (and (< iteration 12) (> balance 0))
+      (recur
+       (inc iteration)
+       (- balance (principle-payment-left-after-interest monthly-payment (one-month-of-interest balance interest-rate)))
+       (+ accrual (one-month-of-interest balance interest-rate)))
+      accrual
+    )))
 
 ;; below: one-off functions
 
@@ -55,12 +65,16 @@
   [starting-balance interest-rate]
   (loop [iteration 12 balance starting-balance accrual 0]
     (if (> iteration 0)
-      (recur (dec iteration) (+ balance (one-month-of-interest balance interest-rate))(+ accrual (one-month-of-interest balance interest-rate)))
+      (recur
+       (dec iteration)
+       (+ balance (one-month-of-interest balance interest-rate))
+       (+ accrual (one-month-of-interest balance interest-rate)))
       accrual
     )))
 
 (defn one-year-of-accrual-with-interest-only-payments
-  "Iteratively calculates the total interest accrued in 12 months with a static balance, as if only the iterest were being paid each month."
+  "Iteratively calculates the total interest accrued in 12 months with a static
+  balance, as if only the iterest were being paid each month."
   [starting-balance interest-rate]
   (loop [iteration 12 balance starting-balance accrual 0]
     (if (> iteration 0)
@@ -69,7 +83,8 @@
     )))
 
 (defn principle-payment-left-after-interest
-  "Subtracts the interest from the payment and returns the amount left that may be applied to principle"
+  "Subtracts the interest from the payment and returns the amount left that may
+  be applied to principle"
   [payment interest]
   (- payment interest))
 
