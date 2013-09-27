@@ -36,6 +36,22 @@
     (* balance (rate-to-percent (monthly-interest-rate interest-rate)))
     0))
 
+(defn cost-of-one-month-of-payments
+  "Sums up all the payments made in a month."
+  [required principle bonus]
+  (+ required principle bonus))
+
+(defn cost-of-one-year-of-payments
+  "Sums up all the payments made in one year."
+  [required principle bonus]
+  (+ (* required 12) (* principle 12) (apply + (vals bonus))))
+
+(defn principle-payment-left-after-interest
+  "Subtracts the interest from the payment and returns the amount left that may
+  be applied to principle"
+  [payment interest]
+  (- payment interest))
+
 (defn new-balance-after-one-month-payment
   "Calculates the new loan balance after one month's payment is made."
   [balance interest-rate required principle bonus]
@@ -48,14 +64,29 @@
 
 (defn new-balance-after-one-year-of-payments
   "Calculates the new loan balance after 12 monthly payments are made."
-  [starting-balance interest-rate required principle bonus]
-  (loop [iteration 0 balance starting-balance accrual 0]
+  [mortgage-params]
+  (loop [iteration 0 balance (:starting-balance mortgage-params) accrual 0]
     (if (and (< iteration 12) (> balance 0))
       (recur
        (inc iteration)
-       (- balance (principle-payment-left-after-interest monthly-payment (one-month-of-interest balance interest-rate)))
-       (+ accrual (one-month-of-interest balance interest-rate)))
-      accrual
+       (let [new-balance
+             (- balance
+              (principle-payment-left-after-interest
+               (:required-payment mortgage-params)
+               (one-month-of-interest balance (:interest-rate mortgage-params)))
+              (:principle-payment mortgage-params)
+              (get (:bonus mortgage-params) iteration 0))]
+         (if (< new-balance 0) 0 new-balance))
+       (+ accrual (one-month-of-interest balance (:interest-rate mortgage-params))))
+      {:ending-balance balance
+       :balance-paid (- (:starting-balance mortgage-params) balance)
+       :interest-accrued accrual
+       :years (months-to-years iteration)
+       :cost (float (let [spent (+ (- (:starting-balance mortgage-params) balance) accrual)
+                   potential-credit (* (:percent (:tax-credit mortgage-params) spent))
+                   credit (if (> potential-credit (:max (:tax-credit mortgage-params))) (:max (:tax-credit mortgage-params)) potential-credit)]
+               (+ (- (:starting-balance mortgage-params) balance) (- accrual credit))
+               ))}
     )))
 
 ;; below: one-off functions
@@ -81,12 +112,6 @@
       (recur (dec iteration) balance (+ accrual (one-month-of-interest balance interest-rate)))
       accrual
     )))
-
-(defn principle-payment-left-after-interest
-  "Subtracts the interest from the payment and returns the amount left that may
-  be applied to principle"
-  [payment interest]
-  (- payment interest))
 
 (defn one-year-of-accrual-with-required-payments
   "Iteratively calculates the total interest accrued in 12 months with principle+interest
