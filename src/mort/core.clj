@@ -61,7 +61,19 @@
            bonus)]
     (if (< new-balance 0) 0 new-balance)))
 
-(defn new-balance-after-one-year-of-payments
+(defn new-balance-after-one-year-payments
+  "Calculates the new loan balance after one year's payments are made."
+  [balance interest-rate required principle bonus]
+  (loop [iteration 0 balance balance]
+    (if (and (< iteration 12) (> balance 0))
+      (recur
+       (inc iteration)
+       (let [new-balance (- (+ balance (one-month-of-interest balance interest-rate)) required principle (get bonus iteration 0))]
+         (if (< new-balance 0) 0 new-balance)))
+      balance)))
+
+
+(defn all-stats-after-one-year-of-payments
   "Calculates the new loan balance after 12 monthly payments are made."
   [mortgage-params]
   (loop [iteration 0 balance (:starting-balance mortgage-params) accrual 0]
@@ -87,8 +99,7 @@
                                    (:max (:tax-credit mortgage-params))
                                    potential-credit)]
                       (+ (- (:starting-balance mortgage-params) balance) (- accrual credit))
-                      ))}
-      )))
+                      ))})))
 
 ;; below: one-off functions
 
