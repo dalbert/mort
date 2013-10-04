@@ -35,12 +35,12 @@
     (* balance (rate-to-percent (monthly-interest-rate interest-rate)))
     0))
 
-(defn cost-of-one-month-of-payments
+(defn sum-of-one-month-of-payments
   "Sums up all the payments made in a month."
   [required principle bonus]
   (+ required principle bonus))
 
-(defn cost-of-one-year-of-payments
+(defn sum-of-one-year-of-payments
   "Sums up all the payments made in one year."
   [required principle bonus]
   (+ (* required 12) (* principle 12) (apply + (vals bonus))))
@@ -50,6 +50,13 @@
   be applied to principle"
   [payment interest]
   (- payment interest))
+
+(defn calculate-tax-credit
+  "Calculates the amount of money recouped by a mortgage interest tax credit given a year's interest payments."
+  [interest-paid tax-credit]
+  (if (> (* interest-paid (rate-to-percent (:rate tax-credit))) (:max tax-credit))
+    (:max tax-credit)
+    (* interest-paid (rate-to-percent (:rate tax-credit)))))
 
 (defn new-balance-after-one-month-payment
   "Calculates the new loan balance after one month's payment is made."
@@ -71,6 +78,26 @@
        (let [new-balance (- (+ balance (one-month-of-interest balance interest-rate)) required principle (get bonus iteration 0))]
          (if (< new-balance 0) 0 new-balance)))
       balance)))
+
+(defn interest-paid-in-one-year
+  "Calculates the gross expense of interest accrued during one year of payments."
+  [balance interest-rate required principle bonus]
+  (loop [iteration 0 balance balance interest-paid 0]
+    (if (and (< iteration 12) (> balance 0))
+      (recur
+       (inc iteration)
+       (let [new-balance (- (+ balance (one-month-of-interest balance interest-rate)) required principle (get bonus iteration 0))]
+         (if (< new-balance 0) 0 new-balance))
+       (+ interest-paid (one-month-of-interest balance interest-rate)))
+      interest-paid)))
+
+(defn interest-cost-in-one-year
+  "Calculates the net expense of interest accrued during one year of payments."
+  [balance interest-rate required principle bonus tax-credit]
+  (let [interest-paid (interest-paid-in-one-year balance interest-rate required principle bonus)
+        credit (calculate-tax-credit (interest-paid-in-one-year balance interest-rate required principle bonus) tax-credit)]
+    (- interest-paid credit)))
+
 
 
 (defn all-stats-after-one-year-of-payments
