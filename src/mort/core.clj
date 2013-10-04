@@ -68,16 +68,10 @@
            bonus)]
     (if (< new-balance 0) 0 new-balance)))
 
-(defn new-balance-after-one-year-payments
-  "Calculates the new loan balance after one year's payments are made."
+(defn principle-paid-in-one-year
+  "Calculates the principle paid off after one year of payments."
   [balance interest-rate required principle bonus]
-  (loop [iteration 0 balance balance]
-    (if (and (< iteration 12) (> balance 0))
-      (recur
-       (inc iteration)
-       (let [new-balance (- (+ balance (one-month-of-interest balance interest-rate)) required principle (get bonus iteration 0))]
-         (if (< new-balance 0) 0 new-balance)))
-      balance)))
+  (- balance (new-balance-after-one-year balance interest-rate required principle bonus)))
 
 (defn interest-paid-in-one-year
   "Calculates the gross expense of interest accrued during one year of payments."
@@ -91,13 +85,23 @@
        (+ interest-paid (one-month-of-interest balance interest-rate)))
       interest-paid)))
 
+(defn new-balance-after-one-year
+  "Calculates the new loan balance after one year's payments are made."
+  [{balance :starting-balance interest-rate :interest-rate required :required-payment principle :principle-payment bonus :bonus}]
+  (loop [iteration 0 balance balance]
+    (if (and (< iteration 12) (> balance 0))
+      (recur
+       (inc iteration)
+       (let [new-balance (- (+ balance (one-month-of-interest balance interest-rate)) required principle (get bonus iteration 0))]
+         (if (< new-balance 0) 0 new-balance)))
+      balance)))
+
 (defn interest-cost-in-one-year
   "Calculates the net expense of interest accrued during one year of payments."
-  [balance interest-rate required principle bonus tax-credit]
+  [{balance :starting-balance interest-rate :interest-rate required :required-payment principle :principle-payment bonus :bonus tax-credit :tax-credit}]
   (let [interest-paid (interest-paid-in-one-year balance interest-rate required principle bonus)
         credit (calculate-tax-credit (interest-paid-in-one-year balance interest-rate required principle bonus) tax-credit)]
     (- interest-paid credit)))
-
 
 
 (defn all-stats-after-one-year-of-payments
@@ -125,8 +129,7 @@
                           credit (if (> potential-credit (:max (:tax-credit mortgage-params)))
                                    (:max (:tax-credit mortgage-params))
                                    potential-credit)]
-                      (+ (- (:starting-balance mortgage-params) balance) (- accrual credit))
-                      ))})))
+                      (+ (- (:starting-balance mortgage-params) balance) (- accrual credit))))})))
 
 ;; below: one-off functions
 
