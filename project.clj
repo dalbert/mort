@@ -3,10 +3,7 @@
   :url "http://example.com/FIXME"
   :license {:name "Eclipse Public License"
             :url "http://www.eclipse.org/legal/epl-v10.html"}
-  :dependencies [
-                 [org.clojure/clojure "1.5.1"]
-                 [org.clojure/tools.cli "0.2.4"]
-                 [org.clojure/math.numeric-tower "0.0.2"]
-                 ]
-  :main mort.core
-  :profiles {:uberjar {:aot :all}})
+  :dependencies [[org.clojure/clojure "1.5.1"]]
+  ;:main mort.core
+  :profiles {:dev {:dependencies [[midje "1.5.1"]]}}
+  :plugins [[lein-midje "3.0.1"]])

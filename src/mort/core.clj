@@ -58,20 +58,9 @@
     (:max tax-credit)
     (* interest-paid (rate-to-percent (:rate tax-credit)))))
 
-(defn new-balance-after-one-month-payment
-  "Calculates the new loan balance after one month's payment is made."
-  [balance interest-rate required principle bonus]
-  (let [new-balance
-        (- balance
-           (principle-payment-left-after-interest required (one-month-of-interest balance interest-rate))
-           principle
-           bonus)]
-    (if (< new-balance 0) 0 new-balance)))
-
-(defn principle-paid-in-one-year
-  "Calculates the principle paid off after one year of payments."
-  [balance interest-rate required principle bonus]
-  (- balance (new-balance-after-one-year balance interest-rate required principle bonus)))
+(defn new-balance-after-one-month
+  [balance interest-rate total-payment]
+  (- (+  balance (one-month-of-interest balance interest-rate)) total-payment))
 
 (defn interest-paid-in-one-year
   "Calculates the gross expense of interest accrued during one year of payments."
@@ -95,6 +84,11 @@
        (let [new-balance (- (+ balance (one-month-of-interest balance interest-rate)) required principle (get bonus iteration 0))]
          (if (< new-balance 0) 0 new-balance)))
       balance)))
+
+(defn principle-paid-in-one-year
+  "Calculates the principle paid off after one year of payments."
+  [balance interest-rate required principle bonus]
+  (- balance (new-balance-after-one-year balance interest-rate required principle bonus)))
 
 (defn interest-cost-in-one-year
   "Calculates the net expense of interest accrued during one year of payments."
