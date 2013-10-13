@@ -6,14 +6,13 @@
 (defn -main  [& args]
   (println "Hello World"))
 
-
 ;; below: reusable, component functions
 
 (defn one-month-of-interest
   "Calculates the amount of interest that would accrue in one month."
   [balance interest-rate]
   (if (> balance 0)
-    (* balance (rate-to-percent (conversion/annual-rate-to-monthly-rate interest-rate)))
+    (* balance (conversion/rate-to-percent (conversion/annual-rate-to-monthly-rate interest-rate)))
     0))
 
 (defn sum-of-one-month-of-payments
@@ -35,9 +34,9 @@
 (defn calculate-tax-credit
   "Calculates the amount of money recouped by a mortgage interest tax credit given a year's interest payments."
   [interest-paid tax-credit]
-  (if (> (* interest-paid (rate-to-percent (:rate tax-credit))) (:max tax-credit))
+  (if (> (* interest-paid (conversion/rate-to-percent (:rate tax-credit))) (:max tax-credit))
     (:max tax-credit)
-    (* interest-paid (rate-to-percent (:rate tax-credit)))))
+    (* interest-paid (conversion/rate-to-percent (:rate tax-credit)))))
 
 (defn new-balance-after-one-month
   [balance interest-rate total-payment]
