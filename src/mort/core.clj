@@ -1,5 +1,6 @@
 (ns mort.core
-  (:gen-class))
+  (:gen-class)
+  (:require [mort.conversion :as conversion]))
 
 
 (defn -main  [& args]
@@ -8,31 +9,11 @@
 
 ;; below: reusable, component functions
 
-(defn monthly-interest-rate
-  "Divides by 12. Pass in the annual interest rate."
-  [interest-rate]
-  (/ interest-rate 12))
-
-(defn rate-to-percent
-  "Divides by 100. Turns a human readble rate into a mathable decimal."
-  [rate]
-  (/ rate 100))
-
-(defn years-to-months
-  "Multiples by 12."
-  [years]
-  (* years 12))
-
-(defn months-to-years
-  "Divides by 12"
-  [months]
-  (/ months 12))
-
 (defn one-month-of-interest
   "Calculates the amount of interest that would accrue in one month."
   [balance interest-rate]
   (if (> balance 0)
-    (* balance (rate-to-percent (monthly-interest-rate interest-rate)))
+    (* balance (rate-to-percent (conversion/annual-rate-to-monthly-rate interest-rate)))
     0))
 
 (defn sum-of-one-month-of-payments
