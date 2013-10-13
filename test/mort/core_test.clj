@@ -20,5 +20,13 @@
 (fact "new-balance-after-one-year: paying 400/mo on a 100000 loan w/ 5% interest brings the balance up to $100204.65"
       (new-balance-after-one-year 100000 5 400 {}) => 914877136187543343065061084481/9130086859014144000000000)
 
-(fact "net-worth-after-one-year is the same as new-balance-after-one-year but negated"
+(fact "new-balance-after-one-year: stops at 0 if you pay it off completely"
+      (new-balance-after-one-year 100000 5 25000 {}) => 0)
+
+(fact "net-worth-after-one-year is basically the same as new-balance-after-one-year but negated"
       (net-worth-after-one-year 100000 5 600 {}) => -892455732753996026284328070709/9130086859014144000000000)
+
+;; TODO: make this test work
+(fact "net-worth-after-one-year will continue into positive balances even after the mortgage is paid in full"
+      (net-worth-after-one-year 100000 5 25000 {}) => 200000)
+
