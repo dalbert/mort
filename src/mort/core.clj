@@ -46,3 +46,8 @@
        (let [new-balance (- (+ balance (one-month-of-interest balance interest-rate)) monthly-payment (get bonus-payments iteration 0))]
          (if (< new-balance 0) 0 new-balance)))
       balance)))
+
+(defn net-worth-after-one-year
+  "Essentially the mortgage balance after a year of payments. Will be positive if the mortgage was fully paid during the year."
+  [balance interest-rate monthly-payment bonus-payments]
+  (- (new-balance-after-one-year balance interest-rate monthly-payment bonus-payments)))
