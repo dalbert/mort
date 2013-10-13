@@ -96,31 +96,3 @@
   (let [interest-paid (interest-paid-in-one-year balance interest-rate required principle bonus)
         credit (calculate-tax-credit (interest-paid-in-one-year balance interest-rate required principle bonus) tax-credit)]
     (- interest-paid credit)))
-
-
-(defn all-stats-after-one-year-of-payments
-  "Calculates the new loan balance after 12 monthly payments are made."
-  [mortgage-params]
-  (loop [iteration 0 balance (:starting-balance mortgage-params) accrual 0]
-    (if (and (< iteration 12) (> balance 0))
-      (recur
-       (inc iteration)
-       (let [new-balance
-             (- balance
-                (principle-payment-left-after-interest
-                 (:required-payment mortgage-params)
-                 (one-month-of-interest balance (:interest-rate mortgage-params)))
-                (:principle-payment mortgage-params)
-                (get (:bonus mortgage-params) iteration 0))]
-         (if (< new-balance 0) 0 new-balance))
-       (+ accrual (one-month-of-interest balance (:interest-rate mortgage-params))))
-      {:ending-balance balance
-       :balance-paid (- (:starting-balance mortgage-params) balance)
-       :interest-accrued accrual
-       :years (months-to-years iteration)
-       :cost (float (let [spent (+ (- (:starting-balance mortgage-params) balance) accrual)
-                          potential-credit (* (:percent (:tax-credit mortgage-params) spent))
-                          credit (if (> potential-credit (:max (:tax-credit mortgage-params)))
-                                   (:max (:tax-credit mortgage-params))
-                                   potential-credit)]
-                      (+ (- (:starting-balance mortgage-params) balance) (- accrual credit))))})))
