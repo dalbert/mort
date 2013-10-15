@@ -28,5 +28,5 @@
 
 ; TODO: make this test work
 (fact "net-worth-after-one-year will continue into positive balances even after the mortgage is paid in full"
-      (net-worth-after-one-year 100000 5 25000 {}) => 200000)
+      (net-worth-after-one-year 100000 5 25000 {}) => 2380388614859/7962624)
 

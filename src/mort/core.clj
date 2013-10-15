@@ -47,7 +47,20 @@
          (if (< new-balance 0) 0 new-balance)))
       balance)))
 
+(defn interest-paid-in-one-year
+  "Calculates the gross expense of interest accrued during one year of payments."
+  [balance interest-rate required principle bonus]
+  (loop [iteration 0 balance balance interest-paid 0]
+    (if (and (< iteration 12) (> balance 0))
+      (recur
+       (inc iteration)
+       (let [new-balance (- (+ balance (one-month-of-interest balance interest-rate)) required principle (get bonus iteration 0))]
+         (if (< new-balance 0) 0 new-balance))
+       (+ interest-paid (one-month-of-interest balance interest-rate)))
+      interest-paid)))
+
 (defn net-worth-after-one-year
   "Essentially the mortgage balance after a year of payments. Will be positive if the mortgage was fully paid during the year."
   [balance interest-rate monthly-payment bonus-payments]
   (- (new-balance-after-one-year balance interest-rate monthly-payment bonus-payments)))
+
