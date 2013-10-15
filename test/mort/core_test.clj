@@ -26,7 +26,7 @@
 (fact "net-worth-after-one-year is basically the same as new-balance-after-one-year but negated"
       (net-worth-after-one-year 100000 5 600 {}) => -892455732753996026284328070709/9130086859014144000000000)
 
-;; TODO: make this test work
+; TODO: make this test work
 (fact "net-worth-after-one-year will continue into positive balances even after the mortgage is paid in full"
       (net-worth-after-one-year 100000 5 25000 {}) => 200000)
 
