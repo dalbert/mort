@@ -64,3 +64,10 @@
   [balance interest-rate monthly-payment bonus-payments]
   (- (new-balance-after-one-year balance interest-rate monthly-payment bonus-payments)))
 
+; TODO:
+; http://clojure.github.io/clojure/clojure.core-api.html#clojure.core/iterate
+; http://clojure.github.io/clojure/clojure.core-api.html#clojure.core/partial
+; Use partial to define a function which has unchanging params (eg interest rates) given by
+; the partial, and all params that change contained in a map so they can be given in a single parameter.
+; Use iterate to create a seq that repeatedly calls the function created by partial
+
