@@ -9,5 +9,3 @@
   "A sequence of repeating month numbers, starting with the given month"
   [start-month]
   (cycle (drop (- start-month 1) (months-vector))))
-
-(month-vector 1)
