@@ -33,8 +33,15 @@
     (* interest-paid (conversion/rate-to-percent (:rate tax-credit)))))
 
 (defn new-balance-after-one-month
-  [balance interest-rate total-payment]
+  [interest-rate total-payment balance]
   (- (+  balance (one-month-of-interest balance interest-rate)) total-payment))
+
+(defn monthly-balances
+  "Returns a seq whose elements are the balance of a mortgage each month after applied payment and accrued interest."
+  [interest-rate payment balance]
+  (iterate (partial new-balance-after-one-month interest-rate payment) balance))
+
+(map float (take 10 (monthly-balances 5 1000 100000)))
 
 (defn new-balance-after-one-year
   "Calculates the new loan balance after one year's payments are made."
@@ -70,4 +77,8 @@
 ; Use partial to define a function which has unchanging params (eg interest rates) given by
 ; the partial, and all params that change contained in a map so they can be given in a single parameter.
 ; Use iterate to create a seq that repeatedly calls the function created by partial
+; The a function that realizes the seq until it reaches a zero balance for the mortgage and returns the index of that seq element
+; Another function to take the nth from the seq and give the ...whatever
+
+
 

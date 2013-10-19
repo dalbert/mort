@@ -10,9 +10,9 @@
       (core/calculate-tax-credit 5000 {:rate 30 :max 2000}) => 1500)
 
 (fact "new-balance-after-one-month subtracts total-payment from the balance plus 1 month's accrued interest. The balance may go negative, users of this function should account for this."
-      (new-balance-after-one-month 100000 5 1000) => 298250/3
-      (new-balance-after-one-month 1000 5 2000) => -5975/6
-      (new-balance-after-one-month 100000 5 1250/3) => 100000)
+      (new-balance-after-one-month 5 1000 100000) => 298250/3
+      (new-balance-after-one-month 5 2000 1000) => -5975/6
+      (new-balance-after-one-month 5 1250/3 100000) => 100000)
 
 (fact "new-balance-after-one-year: paying 600/mo on a 100000 loan w/ 5% interest brings the balance down to $97748.875"
       (new-balance-after-one-year 100000 5 600 {}) => 892455732753996026284328070709/9130086859014144000000000)
@@ -29,4 +29,7 @@
 ; TODO: make this test work
 (fact "net-worth-after-one-year will continue into positive balances even after the mortgage is paid in full"
       (net-worth-after-one-year 100000 5 25000 {}) => 2380388614859/7962624)
+
+(fact "starting balance: $100K, int rate: 5%, monthly payment: $1K - first five monthly balances as floats"
+      (take 5 (core/monthly-balances 5 1000 100000)) => '(100000 298250/3 7115825/72 339526765/3456 16199302073/165888 ))
 
