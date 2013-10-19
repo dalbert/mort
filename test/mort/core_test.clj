@@ -9,9 +9,9 @@
       (core/calculate-tax-credit 10000 {:rate 30 :max 3001}) => 3000
       (core/calculate-tax-credit 5000 {:rate 30 :max 2000}) => 1500)
 
-(fact "new-balance-after-one-month subtracts total-payment from the balance plus 1 month's accrued interest. The balance may go negative, users of this function should account for this."
+(fact "new-balance-after-one-month subtracts total-payment from the balance plus 1 month's accrued interest."
       (new-balance-after-one-month 5 1000 100000) => 298250/3
-      (new-balance-after-one-month 5 2000 1000) => -5975/6
+      (new-balance-after-one-month 5 2000 1000) => 0
       (new-balance-after-one-month 5 1250/3 100000) => 100000)
 
 (fact "new-balance-after-one-year: paying 600/mo on a 100000 loan w/ 5% interest brings the balance down to $97748.875"
@@ -24,12 +24,19 @@
       (new-balance-after-one-year 100000 5 25000 {}) => 0)
 
 (fact "net-worth-after-one-year is basically the same as new-balance-after-one-year but negated"
-      (net-worth-after-one-year 100000 5 600 {}) => -892455732753996026284328070709/9130086859014144000000000)
+      (net-worth-after-one-year 5 600 100000) => -892455732753996026284328070709/9130086859014144000000000)
 
-; TODO: make this test work
+; TODO: make this true
 (fact "net-worth-after-one-year will continue into positive balances even after the mortgage is paid in full"
-      (net-worth-after-one-year 100000 5 25000 {}) => 2380388614859/7962624)
+      (net-worth-after-one-year 5 25000 100000) => 1584126214859/7962624)
 
 (fact "starting balance: $100K, int rate: 5%, monthly payment: $1K - first five monthly balances as floats"
-      (take 5 (core/monthly-balances 5 1000 100000)) => '(100000 298250/3 7115825/72 339526765/3456 16199302073/165888 ))
+      (take 5 (core/mortgage-balance-monthly 5 1000 100000)) => '(100000 298250/3 7115825/72 339526765/3456 16199302073/165888 ))
+
+; TODO: make this true
+(fact "starting balance: $100K, int rate: 5%, monthly payment: $25K - balance drops to zero and does not continue into negative values"
+      (nth (core/mortgage-balance-monthly 5 25000 100000) 12) => 0)
+
+(fact "net-worth-monthly is the same as monthly balances with each element negated"
+      (take 5 (core/net-worth-monthly 5 1000 100000)) => '(-100000 -298250/3 -7115825/72 -339526765/3456 -16199302073/165888 ))
 

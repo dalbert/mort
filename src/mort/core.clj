@@ -33,26 +33,14 @@
     (* interest-paid (conversion/rate-to-percent (:rate tax-credit)))))
 
 (defn new-balance-after-one-month
-  [interest-rate total-payment balance]
-  (- (+  balance (one-month-of-interest balance interest-rate)) total-payment))
-
-(defn monthly-balances
-  "Returns a seq whose elements are the balance of a mortgage each month after applied payment and accrued interest."
   [interest-rate payment balance]
-  (iterate (partial new-balance-after-one-month interest-rate payment) balance))
+  (let [new-balance (- (+  balance (one-month-of-interest balance interest-rate)) payment)]
+    (if (< new-balance 0) 0 new-balance)))
 
-(map float (take 10 (monthly-balances 5 1000 100000)))
-
-(defn new-balance-after-one-year
-  "Calculates the new loan balance after one year's payments are made."
-  [balance interest-rate monthly-payment bonus-payments]
-  (loop [iteration 0 balance balance]
-    (if (and (< iteration 12) (> balance 0))
-      (recur
-       (inc iteration)
-       (let [new-balance (- (+ balance (one-month-of-interest balance interest-rate)) monthly-payment (get bonus-payments iteration 0))]
-         (if (< new-balance 0) 0 new-balance)))
-      balance)))
+(defn net-worth-after-one-month
+  "TODO: don't require callers to negate the result in order for this to make sense as a net worth value"
+  [interest-rate payment balance]
+  (- (+  balance (one-month-of-interest balance interest-rate)) payment))
 
 (defn interest-paid-in-one-year
   "Calculates the gross expense of interest accrued during one year of payments."
@@ -66,19 +54,17 @@
        (+ interest-paid (one-month-of-interest balance interest-rate)))
       interest-paid)))
 
-(defn net-worth-after-one-year
+(defn mortgage-balance-monthly
+  "Returns a seq whose elements are the balance of a mortgage each month after applied payment and accrued interest."
+  [interest-rate payment balance]
+  (iterate (partial new-balance-after-one-month interest-rate payment) balance))
+
+(defn net-worth-monthly
   "Essentially the mortgage balance after a year of payments. Will be positive if the mortgage was fully paid during the year."
-  [balance interest-rate monthly-payment bonus-payments]
-  (- (new-balance-after-one-year balance interest-rate monthly-payment bonus-payments)))
+  [interest-rate payment balance]
+  (map - (iterate (partial net-worth-after-one-month interest-rate payment) balance)))
 
-; TODO:
-; http://clojure.github.io/clojure/clojure.core-api.html#clojure.core/iterate
-; http://clojure.github.io/clojure/clojure.core-api.html#clojure.core/partial
-; Use partial to define a function which has unchanging params (eg interest rates) given by
-; the partial, and all params that change contained in a map so they can be given in a single parameter.
-; Use iterate to create a seq that repeatedly calls the function created by partial
-; The a function that realizes the seq until it reaches a zero balance for the mortgage and returns the index of that seq element
-; Another function to take the nth from the seq and give the ...whatever
-
-
-
+(defn net-worth-after-one-year
+  "Accounting only for mortgage balance nad payments, what's my net worth after 12 months?"
+  [interest-rate payment balance]
+  (nth (net-worth-monthly interest-rate payment balance) 12))
