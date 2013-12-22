@@ -32,11 +32,6 @@
     (:max tax-credit)
     (* interest-paid (conversion/rate-to-percent (:rate tax-credit)))))
 
-(defn new-balance-after-one-month
-  [interest-rate payment balance]
-  (let [new-balance (- (+  balance (one-month-of-interest balance interest-rate)) payment)]
-    (if (< new-balance 0) 0 new-balance)))
-
 (defn net-worth-after-one-month
   "TODO: don't require callers to negate the result in order for this to make sense as a net worth value"
   [interest-rate payment balance]
@@ -54,6 +49,11 @@
        (+ interest-paid (one-month-of-interest balance interest-rate)))
       interest-paid)))
 
+(defn new-balance-after-one-month
+  [interest-rate payment balance]
+  (let [new-balance (- (+  balance (one-month-of-interest balance interest-rate)) payment)]
+    (if (< new-balance 0) 0 new-balance)))
+
 (defn mortgage-balance-monthly
   "Returns a seq whose elements are the balance of a mortgage each month after applied payment and accrued interest."
   [interest-rate payment balance]
@@ -65,6 +65,6 @@
   (map - (iterate (partial net-worth-after-one-month interest-rate payment) balance)))
 
 (defn net-worth-after-one-year
-  "Accounting only for mortgage balance nad payments, what's my net worth after 12 months?"
+  "Accounting only for mortgage balance and payments, what's my net worth after 12 months?"
   [interest-rate payment balance]
   (nth (net-worth-monthly interest-rate payment balance) 12))
