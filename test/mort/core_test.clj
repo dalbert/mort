@@ -26,14 +26,12 @@
 (fact "net-worth-after-one-year is basically the same as new-balance-after-one-year but negated"
       (net-worth-after-one-year 5 600 100000) => -892455732753996026284328070709/9130086859014144000000000)
 
-; TODO: make this true
 (fact "net-worth-after-one-year will continue into positive balances even after the mortgage is paid in full"
       (net-worth-after-one-year 5 25000 100000) => 1584126214859/7962624)
 
 (fact "starting balance: $100K, int rate: 5%, monthly payment: $1K - first five monthly balances as floats"
       (take 5 (core/mortgage-balance-monthly 5 1000 100000)) => '(100000 298250/3 7115825/72 339526765/3456 16199302073/165888 ))
 
-; TODO: make this true
 (fact "starting balance: $100K, int rate: 5%, monthly payment: $25K - balance drops to zero and does not continue into negative values"
       (nth (core/mortgage-balance-monthly 5 25000 100000) 12) => 0)
 

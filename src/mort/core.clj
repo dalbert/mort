@@ -60,7 +60,7 @@
   (iterate (partial new-balance-after-one-month interest-rate payment) balance))
 
 (defn net-worth-monthly
-  "Essentially the mortgage balance after a year of payments. Will be positive if the mortgage was fully paid during the year."
+  "Essentially the mortgage balance after a month of payments. Will be positive if the mortgage was fully paid during the month."
   [interest-rate payment balance]
   (map - (iterate (partial net-worth-after-one-month interest-rate payment) balance)))
 
