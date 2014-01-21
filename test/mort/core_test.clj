@@ -38,3 +38,6 @@
 (fact "net-worth-monthly is the same as monthly balances with each element negated"
       (take 5 (core/net-worth-monthly 5 1000 100000)) => '(-100000 -298250/3 -7115825/72 -339526765/3456 -16199302073/165888 ))
 
+(fact "net-worth-monthly-v2 is the same as net-worth-monthly if all you give it is mortgage info"
+      (take 5 (core/net-worth-monthly-v2 100000 1000 5)) => '(-100000 -298250/3 -7115825/72 -339526765/3456 -16199302073/165888 ))
+

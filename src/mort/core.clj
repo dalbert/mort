@@ -10,20 +10,10 @@
 
 (defn one-month-of-interest
   "Calculates the amount of interest that would accrue in one month."
-  [balance interest-rate]
+  [interest-rate balance]
   (if (> balance 0)
     (* balance (conversion/rate-to-percent (conversion/annual-rate-to-monthly-rate interest-rate)))
     0))
-
-(defn sum-of-one-month-of-payments
-  "Sums up all the payments made in a month."
-  [required principle bonus]
-  (+ required principle bonus))
-
-(defn sum-of-one-year-of-payments
-  "Sums up all the payments made in one year."
-  [required principle bonus]
-  (+ (* required 12) (* principle 12) (apply + (vals bonus))))
 
 (defn calculate-tax-credit
   "Calculates the amount of money recouped by a mortgage interest tax credit given a year's interest payments."
@@ -35,7 +25,7 @@
 (defn net-worth-after-one-month
   "TODO: don't require callers to negate the result in order for this to make sense as a net worth value"
   [interest-rate payment balance]
-  (- (+  balance (one-month-of-interest balance interest-rate)) payment))
+  (- (+  balance (one-month-of-interest interest-rate balance)) payment))
 
 (defn interest-paid-in-one-year
   "Calculates the gross expense of interest accrued during one year of payments."
@@ -44,14 +34,14 @@
     (if (and (< iteration 12) (> balance 0))
       (recur
        (inc iteration)
-       (let [new-balance (- (+ balance (one-month-of-interest balance interest-rate)) required principle (get bonus iteration 0))]
+       (let [new-balance (- (+ balance (one-month-of-interest interest-rate balance)) required principle (get bonus iteration 0))]
          (if (< new-balance 0) 0 new-balance))
-       (+ interest-paid (one-month-of-interest balance interest-rate)))
+       (+ interest-paid (one-month-of-interest interest-rate balance)))
       interest-paid)))
 
 (defn new-balance-after-one-month
   [interest-rate payment balance]
-  (let [new-balance (- (+  balance (one-month-of-interest balance interest-rate)) payment)]
+  (let [new-balance (- (+  balance (one-month-of-interest interest-rate balance)) payment)]
     (if (< new-balance 0) 0 new-balance)))
 
 (defn mortgage-balance-monthly
@@ -68,3 +58,15 @@
   "Accounting only for mortgage balance and payments, what's my net worth after 12 months?"
   [interest-rate payment balance]
   (nth (net-worth-monthly interest-rate payment balance) 12))
+
+
+
+(defn net-worth-monthly-v2
+  "Takes a starting net worth, applies a collection of recurring debits/credits repeatedly."
+  [starting-balance credits debits]
+  ())
+
+(defn interest-func
+  "monthly interest"
+  [rate]
+  (partial one-month-of-interest rate))
