@@ -63,10 +63,27 @@
 
 (defn net-worth-monthly-v2
   "Takes a starting net worth, applies a collection of recurring debits/credits repeatedly."
-  [starting-balance credits debits]
+  [savings debts]
   ())
 
 (defn interest-func
   "monthly interest"
   [rate]
   (partial one-month-of-interest rate))
+
+(defprotocol AccountStuff
+  (accrue [_ balance] "calculates interest accrued")
+  (pay [_ balance payment] "calculates new balance after a payment"))
+
+
+(defrecord Account [rate starting-balance]
+  AccountStuff
+  (accrue [_ balance] (+ (one-month-of-interest rate balance) balance))
+  (pay [_ balance payment] (- balance payment)))
+
+(def mortgage (Account. 5 100000))
+(type mortgage)
+(accrue mortgage (:starting-balance mortgage))
+(pay mortgage (:starting-balance mortgage) 1000)
+
+(net-worth-monthly-v2 (fn [] (3000)) ((interest-func 5) 100000))
