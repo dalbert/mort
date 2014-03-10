@@ -18,9 +18,11 @@ Savings     {:balance :rate}
   Implementation:
     is a seq of balance values
 
-Investment  {:balance}
+Investment  {:balance :rate}
   Notes:
     balance is positive
+    rate is the average return expected from this investment, user may experiment
+    with different outcomes by altering this rate
     no accrue
     new balance setter:
       balance must be updated from external input; balance changes cannot be calculated/predicted
