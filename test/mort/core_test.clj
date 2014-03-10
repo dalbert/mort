@@ -30,10 +30,10 @@
       (net-worth-after-one-year 5 25000 100000) => 1584126214859/7962624)
 
 (fact "starting balance: $100K, int rate: 5%, monthly payment: $1K - first five monthly balances as floats"
-      (take 5 (core/mortgage-balance-monthly 5 1000 100000)) => '(100000 298250/3 7115825/72 339526765/3456 16199302073/165888 ))
+      (take 5 (core/account-balance-monthly 5 1000 100000)) => '(100000 298250/3 7115825/72 339526765/3456 16199302073/165888 ))
 
 (fact "starting balance: $100K, int rate: 5%, monthly payment: $25K - balance drops to zero and does not continue into negative values"
-      (nth (core/mortgage-balance-monthly 5 25000 100000) 12) => 0)
+      (nth (core/account-balance-monthly 5 25000 100000) 12) => 0)
 
 (fact "net-worth-monthly is the same as monthly balances with each element negated"
       (take 5 (core/net-worth-monthly 5 1000 100000)) => '(-100000 -298250/3 -7115825/72 -339526765/3456 -16199302073/165888 ))

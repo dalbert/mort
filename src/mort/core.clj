@@ -1,6 +1,7 @@
 (ns mort.core
   (:gen-class)
-  (:require [mort.conversion :as conversion]))
+  (:require [mort.conversion :as conversion])
+  (:require [mort.scenario :as scenario]))
 
 
 (defn -main  [& args]
@@ -44,7 +45,7 @@
   (let [new-balance (- (+  balance (one-month-of-interest interest-rate balance)) payment)]
     (if (< new-balance 0) 0 new-balance)))
 
-(defn mortgage-balance-monthly
+(defn account-balance-monthly
   "Returns a seq whose elements are the balance of a mortgage each month after applied payment and accrued interest."
   [interest-rate payment balance]
   (iterate (partial new-balance-after-one-month interest-rate payment) balance))
@@ -71,19 +72,25 @@
   [rate]
   (partial one-month-of-interest rate))
 
-(defprotocol AccountStuff
+(defprotocol AccountProto
   (accrue [_ balance] "calculates interest accrued")
-  (pay [_ balance payment] "calculates new balance after a payment"))
+  (pay [_ balance payment] "calculates new balance after a payment")
+  (balance? [_] "get the balance of the account"))
 
 
 (defrecord Account [rate starting-balance]
-  AccountStuff
+  AccountProto
   (accrue [_ balance] (+ (one-month-of-interest rate balance) balance))
-  (pay [_ balance payment] (- balance payment)))
+  (pay [_ balance payment] (- balance payment))
+  (balance? [_] ))
 
 (def mortgage (Account. 5 100000))
 (type mortgage)
 (accrue mortgage (:starting-balance mortgage))
 (pay mortgage (:starting-balance mortgage) 1000)
+(map float (account-balance-monthly 5 417 100000))
+
 
 (net-worth-monthly-v2 (fn [] (3000)) ((interest-func 5) 100000))
+
+(:balance scenario/mortgage)

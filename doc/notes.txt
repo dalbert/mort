@@ -1,0 +1,40 @@
+Debt        {:balance :rate}
+  Notes:
+    balance is negative
+    accrue causes balance to go down according to rate
+    when balance goes above zero:
+      wrapping function/whatever should check the balance after every accrue and
+      take the extra balance back; this leaves the balance at zero and makes any
+      later calls to accrue pointless and harmless
+  Implementation:
+    is a seq of balance values
+
+Savings     {:balance :rate}
+  Notes:
+    balance is positive
+    accrue causes balance to go up according to rate
+    when balance goes below zero:
+      leave it negative, I guess
+  Implementation:
+    is a seq of balance values
+
+Investment  {:balance}
+  Notes:
+    balance is positive
+    no accrue
+    new balance setter:
+      balance must be updated from external input; balance changes cannot be calculated/predicted
+  Implementation:
+    no clue, would need to ask for external input and then return that found balance
+  Use:
+    add the returned balance to a net worth calculation, but don't accumulate it
+
+Budget      {:balance}
+  Notes:
+    balance is actually a recurring amount, always returns the same balance
+    may be either positive or negative
+  Implementation:
+    is a function that always returns the same number
+  Use:
+    add the returned balance to net worth or to a default account each month, accumulating over time
+    may be used for both recurring expenses and recurring income
