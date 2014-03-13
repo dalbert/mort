@@ -1,8 +1,8 @@
 (ns mort.core
   (:gen-class)
   (:require [mort.conversion :as conversion])
-  (:require [mort.scenario :as scenario])
-  (:require [mort.util :as util]))
+  (:require [mort.util :as util])
+  (:require [mort.scenario :as scenario]))
 
 
 (defn -main  [& args]
@@ -78,15 +78,9 @@
   (pay [_ balance payment] (- balance payment))
   (balance? [_] ))
 
-(def mortgage (Account. 5 100000))
-(type mortgage)
-(accrue mortgage (:starting-balance mortgage))
-(pay mortgage (:starting-balance mortgage) 1000)
-(map float (account-balance-monthly 5 417 100000))
-
-
 (net-worth-monthly-v2 (fn [] (3000)) ((interest-func 5) 100000))
 
-(:balance scenario/mortgage)
-(scenario/salary scenario/salary-init)
-(scenario/investment-balance scenario/investment-init)
+; (iterate (partial new-balance-after-one-month interest-rate payment) balance)
+
+(def accounts-seq (iterate util/accrue-all scenario/my-accounts))
+(clojure.pprint/pprint (take 5 accounts-seq))

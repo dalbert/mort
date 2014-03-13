@@ -1,17 +1,19 @@
 (ns mort.scenario
-  (:require [mort.util :as util]))
+  (:require [mort.util :as util])
+  (:import [mort.util BankAccount]))
 
-
-(def savings-init {:balance 1000 :rate 0.75})
-(def mortgage-init {:balance -200000 :rate 5})
-(def investment-init {:balance 10000 :rate 6})
-(def salary-init {:balance 4500})
-
-(defn salary [salary-init] (:balance salary-init))
-(defn investment-balance [investment-init]
-  (+ (:balance investment-init)
-     (* (util/one-month-of-interest (:rate investment-init) (:balance investment-init)))))
-
-(investment-balance investment-init)
+(def my-accounts [(util/BankAccount. -100000 5) ; mortgage
+                  (util/BankAccount. 10000 0.25) ; checking
+                  (util/BankAccount. 1000 2) ; savings
+                  (util/BankAccount. 15000 6) ; investment, average return given as rate
+                  ])
+(def crap (util/accrue-all my-accounts))
+(def shit (util/accrue-all crap))
+(print "my-accounts")
+(clojure.pprint/pprint my-accounts)
+(print "crap")
+(clojure.pprint/pprint crap)
+(print "shit")
+(clojure.pprint/pprint shit)
 
 
