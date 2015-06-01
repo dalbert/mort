@@ -83,4 +83,4 @@
 ; (iterate (partial new-balance-after-one-month interest-rate payment) balance)
 
 (def accounts-seq (iterate util/accrue-all scenario/my-accounts))
-(clojure.pprint/pprint (take 5 accounts-seq))
+;(clojure.pprint/pprint (take 5 accounts-seq))

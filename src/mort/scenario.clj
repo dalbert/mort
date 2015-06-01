@@ -7,13 +7,13 @@
                   (util/BankAccount. 1000 2) ; savings
                   (util/BankAccount. 15000 6) ; investment, average return given as rate
                   ])
-(def crap (util/accrue-all my-accounts))
-(def shit (util/accrue-all crap))
-(print "my-accounts")
-(clojure.pprint/pprint my-accounts)
-(print "crap")
-(clojure.pprint/pprint crap)
-(print "shit")
-(clojure.pprint/pprint shit)
+;(def crap (util/accrue-all my-accounts))
+;(def shit (util/accrue-all crap))
+;(print "my-accounts")
+;(clojure.pprint/pprint my-accounts)
+;(print "crap")
+;(clojure.pprint/pprint crap)
+;(print "shit")
+;(clojure.pprint/pprint shit)
 
 
